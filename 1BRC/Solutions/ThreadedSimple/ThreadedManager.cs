@@ -1,4 +1,4 @@
-﻿namespace _1BRC.Solutions;
+﻿namespace _1BRC.Solutions.ThreadedSimple;
 
 public class ThreadedManager(int threadCount = 6, long linesInFile = 1_000_000_000)
 {

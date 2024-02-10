@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace _1BRC.Solutions;
+namespace _1BRC.Solutions.Simple;
 
 public class SimpleLinear
 {
