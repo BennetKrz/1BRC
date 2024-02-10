@@ -1,0 +1,2 @@
+dotnet publish -r win-x64 -c Release -p:PublishAot=true
+cd G:\C#\1BRC\1BRC\bin\Release\net8.0\win-x64\publish\
