@@ -2,7 +2,7 @@
 
 namespace _1BRC.Solutions;
 
-public class Threaded(int numberOfLines, int threadNumber, int extra)
+public class Threaded(long numberOfLines, int threadNumber, long extra)
 {
     public Dictionary<string, Result> AnalyseLines()
     {
@@ -10,8 +10,8 @@ public class Threaded(int numberOfLines, int threadNumber, int extra)
         
         Dictionary<string, List<double>> measurements = new();
         IEnumerable<string> lines = File.ReadLines(ThreadedManager.MeasurementsFile)
-                                        .Skip(threadNumber * numberOfLines)
-                                        .Take(numberOfLines + extra);
+                                        .Skip((int)(threadNumber * numberOfLines))
+                                        .Take((int)(numberOfLines + extra));
         
         int count = 0;
         foreach (string line in lines)
