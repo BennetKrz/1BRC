@@ -1,27 +1,32 @@
-﻿using System;
-
-namespace _1BRC;
+﻿namespace _1BRC.Solutions;
 
 public class ThreadedManager(int threadCount = 6)
 {
+    public static string MeasurementsFile = @"G:\C#\1BRC\1BRC\measurements.txt";
+    
     private List<Task<Dictionary<string, Result>>> threads = new();
     private List<Dictionary<string, Result>> results = new();
     
     public async Task Start()
     {
-        int linesPerThread = 166_666_666;
+        int linesInFile = File.ReadLines(MeasurementsFile).Count();
+        int linesPerThread = linesInFile / threadCount;
+        int externalExtra = linesPerThread * threadCount == 1_000_000_000
+            ? 0
+            : linesInFile - linesPerThread * threadCount;
+        
         for (int i = 0; i < threadCount; i++)
         {
             int extra = 0;
             if (i == threadCount - 1)
             {
-                extra = 4;
+                extra = externalExtra;
             }
 
             int ii = i;
             
             Task<Dictionary<string, Result>> t =
-                Task.Run(() => new Threaded(linesPerThread, ii, extra).analyseLines());
+                Task.Run(() => new Threaded(linesPerThread, ii, extra).AnalyseLines());
             threads.Add(t);
             
         }

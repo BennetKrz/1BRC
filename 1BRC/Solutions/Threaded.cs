@@ -1,20 +1,22 @@
 ﻿using System.Globalization;
 
-namespace _1BRC;
+namespace _1BRC.Solutions;
 
 public class Threaded(int numberOfLines, int threadNumber, int extra)
 {
-    public Dictionary<string, Result> analyseLines()
+    public Dictionary<string, Result> AnalyseLines()
     {
         Console.WriteLine("Thread " + threadNumber + " started!");
+        
         Dictionary<string, List<double>> measurements = new();
-        int count = 0;
-        IEnumerable<string> lines = File.ReadLines(@"G:\C#\1BRC\1BRC\measurements.txt")
+        IEnumerable<string> lines = File.ReadLines(ThreadedManager.MeasurementsFile)
                                         .Skip(threadNumber * numberOfLines)
                                         .Take(numberOfLines + extra);
+        
+        int count = 0;
         foreach (string line in lines)
         {
-            if (count % 10_000_000 == 0)
+            if (count != 0 && count % 10_000_000 == 0)
             {
                 Console.WriteLine(count + " lines on thread: " + threadNumber);
             }

@@ -1,5 +1,6 @@
-﻿namespace _1BRC;
-using System.Globalization;
+﻿using System.Globalization;
+
+namespace _1BRC.Solutions;
 
 public class SimpleLinear
 {
