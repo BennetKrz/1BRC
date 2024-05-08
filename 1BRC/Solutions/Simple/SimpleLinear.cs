@@ -5,7 +5,7 @@ namespace _1BRC.Solutions.Simple;
 public class SimpleLinear
 {
 
-    IEnumerable<string> lines = File.ReadLines(@"G:\C#\1BRC\1BRC\measurements.txt");
+    IEnumerable<string> lines = File.ReadLines(@"H:\Java\1brc-main\measurements.txt");
     Dictionary<string, List<Double>> measurements = new();
 
     public void Start()
@@ -18,7 +18,7 @@ public class SimpleLinear
             {
                 Console.WriteLine(count);
             }
-            string[] data = line.Split(";");
+            string[] data = line.Replace(";","").Split("=");
             if (!measurements.ContainsKey(data[0]))
             {
                 measurements.Add(data[0], new List<double>());

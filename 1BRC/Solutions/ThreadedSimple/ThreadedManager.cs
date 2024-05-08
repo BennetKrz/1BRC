@@ -2,8 +2,7 @@
 
 public class ThreadedManager(int threadCount = 6, long linesInFile = 1_000_000_000)
 {
-    public static string MeasurementsFile = @"G:\C#\1BRC\1BRC\measurements.txt";
-    
+    public static string MeasurementsFile = @"H:\Java\1brc-main\measurements.txt";
     
     public async Task Start()
     {

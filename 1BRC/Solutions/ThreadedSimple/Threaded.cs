@@ -22,7 +22,7 @@ public class Threaded(long numberOfLines, int threadNumber, long extra)
             }
 
             count++;
-            string[] data = line.Split(";");
+            string[] data = line.Replace(";","").Split("=");
             if (!measurements.ContainsKey(data[0]))
             {
                 measurements.Add(data[0], new List<double>());

@@ -1,12 +1,21 @@
 ﻿using System.Diagnostics;
 using _1BRC;
 using _1BRC.Solutions;
+using _1BRC.Solutions.MMFSolution;
+using _1BRC.Solutions.Simple;
 using _1BRC.Solutions.ThreadedSimple;
 
 Stopwatch sw = Stopwatch.StartNew();
 
-ThreadedManager manager = new(6);
-await manager.Start();
+MMFSolution mmfSolution = new(12);
+await mmfSolution.Start();
+
+
+//SimpleLinear s = new();
+//s.Start();
+
+//ThreadedManager manager = new(12);}}
+//await manager.Start();
 
 sw.Stop();
 
