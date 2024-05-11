@@ -2,26 +2,30 @@
 
 namespace _1BRC.Solutions.ThreadedSimple;
 
-public class Threaded(long numberOfLines, int threadNumber, long extra)
+public class ThreadedWorker : IWorker
 {
+    private readonly long numberOfLines;
+    private readonly int threadNumber;
+    private readonly long extra;
+    
+    public ThreadedWorker(long numberOfLines, int threadNumber, long extra)
+    {
+        this.numberOfLines = numberOfLines;
+        this.threadNumber = threadNumber;
+        this.extra = extra;
+    }
+    
     public Dictionary<string, Result> AnalyseLines()
     {
         Console.WriteLine("Thread " + threadNumber + " started!");
         
         Dictionary<string, List<double>> measurements = new();
-        IEnumerable<string> lines = File.ReadLines(ThreadedManager.MeasurementsFile)
+        IEnumerable<string> lines = File.ReadLines(AbstractManager.filePath)
                                         .Skip((int)(threadNumber * numberOfLines))
                                         .Take((int)(numberOfLines + extra));
         
-        int count = 0;
         foreach (string line in lines)
         {
-            if (count != 0 && count % 10_000_000 == 0)
-            {
-                Console.WriteLine(count + " lines on thread: " + threadNumber);
-            }
-
-            count++;
             string[] data = line.Replace(";","").Split("=");
             if (!measurements.ContainsKey(data[0]))
             {
@@ -40,8 +44,7 @@ public class Threaded(long numberOfLines, int threadNumber, long extra)
             List<double> values = measurements[city];
             results.Add(city, new Result(values.Min(), values.Sum() / values.Count(), values.Max()));
         }
-
-        Console.WriteLine("Thread " + threadNumber + " finished!");
+        
         return results;
     }
 }

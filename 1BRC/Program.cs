@@ -7,14 +7,14 @@ using _1BRC.Solutions.ThreadedSimple;
 
 Stopwatch sw = Stopwatch.StartNew();
 
-MMFSolution mmfSolution = new(12);
-await mmfSolution.Start();
+MmfManager mmfManager = new(12);
+await mmfManager.Start();
 
 
 //SimpleLinear s = new();
 //s.Start();
 
-//ThreadedManager manager = new(12);}}
+//ThreadedManager manager = new(12);
 //await manager.Start();
 
 sw.Stop();

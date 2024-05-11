@@ -4,31 +4,31 @@ using _1BRC.Solutions.ThreadedSimple;
 
 namespace _1BRC.Solutions.MMFSolution;
 
-public class MMFWorker
+public class MmfWorker : IWorker
 {
     private MemoryMappedViewAccessor memoryMappedViewAccessor;
-    private readonly MemoryMappedFile mmf;
     private (long start, long end) delta;
 
-    public MMFWorker((long start, long end) delta, MemoryMappedFile mmf)
+    public MmfWorker((long start, long end) delta, MemoryMappedViewAccessor memoryMappedViewAccessor)
     {
-        this.memoryMappedViewAccessor = mmf.CreateViewAccessor(delta.start, delta.end - delta.start, MemoryMappedFileAccess.Read);
-        this.mmf = mmf;
         this.delta = delta;
+        this.memoryMappedViewAccessor = memoryMappedViewAccessor;
     }
-    public Dictionary<string, Result> Ackern()
+    
+    public Dictionary<string, Result> AnalyseLines()
     {
         Dictionary<string, List<double>> measurements = new();
-            
+        
         unsafe
         {
             byte* pointer = (byte*)0;
             memoryMappedViewAccessor.SafeMemoryMappedViewHandle.AcquirePointer(ref pointer);
-            Span<byte> span = new (pointer, (int)(delta.end - delta.start));
+            Span<byte> span = new (pointer + delta.start, (int)(delta.end - delta.start));
             fixed(byte* ptr = span)
             {
+             
                 byte* endPtr = ptr + span.Length;
-
+                
                 byte* startCity = ptr;
                 byte* endCity = ptr;
                 byte* startTmp = ptr;
@@ -47,21 +47,20 @@ public class MMFWorker
                     }
 
                     //Semikolon gefunden
-                    if (*currentPtr == 59)
-                    {
-                        endTmp = currentPtr - 1;
-                        startCity = currentPtr + 2;
+                    if (*currentPtr != 59) continue;
+                    
+                    endTmp = currentPtr - 1;
+                    startCity = currentPtr + 2;
                         
-                        double tmpValue = GetTemperature(startTmp, endTmp);
-                        if (measurements.ContainsKey(cityName))
-                        {
-                            measurements[cityName].Add(tmpValue);
-                        }
-                        else
-                        {
-                            measurements.Add(cityName, new List<double>());
-                            measurements[cityName].Add(tmpValue);
-                        }
+                    double tmpValue = GetTemperature(startTmp, endTmp);
+                    if (measurements.ContainsKey(cityName))
+                    {
+                        measurements[cityName].Add(tmpValue);
+                    }
+                    else
+                    {
+                        measurements.Add(cityName, new List<double>(205_000));
+                        measurements[cityName].Add(tmpValue);
                     }
                 }
             }
@@ -73,14 +72,15 @@ public class MMFWorker
             List<double> values = measurements[city];
             results.Add(city, new Result(values.Min(), values.Sum() / values.Count(), values.Max()));
         }
-
+        
         return results;
     }
     
     private unsafe String ConvertCityName(byte* start, byte* end)
     {
         int length = (int)(end - start + 1);
-        return System.Text.Encoding.UTF8.GetString(start, length);
+        string cityName = System.Text.Encoding.UTF8.GetString(start, length);
+        return cityName;
     }
 
     //TODO: Hier verschiedene möglichkeiten testen: Also switch oder convert
