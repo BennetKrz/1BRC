@@ -8,7 +8,7 @@ public class MmfWorker : IWorker
 {
     private MemoryMappedViewAccessor memoryMappedViewAccessor;
     private (long start, long end) delta;
-
+    
     public MmfWorker((long start, long end) delta, MemoryMappedViewAccessor memoryMappedViewAccessor)
     {
         this.delta = delta;
@@ -17,7 +17,7 @@ public class MmfWorker : IWorker
     
     public Dictionary<string, Result> AnalyseLines()
     {
-        Dictionary<string, List<double>> measurements = new();
+        Dictionary<string, List<int>> measurements = new();
         
         unsafe
         {
@@ -52,14 +52,14 @@ public class MmfWorker : IWorker
                     endTmp = currentPtr - 1;
                     startCity = currentPtr + 2;
                         
-                    double tmpValue = GetTemperature(startTmp, endTmp);
+                    int tmpValue = GetTemperature(startTmp, endTmp);
                     if (measurements.ContainsKey(cityName))
                     {
                         measurements[cityName].Add(tmpValue);
                     }
                     else
                     {
-                        measurements.Add(cityName, new List<double>(205_000));
+                        measurements.Add(cityName, new List<int>(205_000));
                         measurements[cityName].Add(tmpValue);
                     }
                 }
@@ -69,8 +69,8 @@ public class MmfWorker : IWorker
         Dictionary<string, Result> results = new();
         foreach (string city in measurements.Keys)
         {
-            List<double> values = measurements[city];
-            results.Add(city, new Result(values.Min(), values.Sum() / values.Count(), values.Max()));
+            List<int> values = measurements[city];
+            results.Add(city, new Result(values.Min() * 0.1, ((double)values.Sum() / (double)values.Count) * 0.1, values.Max() * 0.1));
         }
         
         return results;
@@ -84,10 +84,46 @@ public class MmfWorker : IWorker
     }
 
     //TODO: Hier verschiedene möglichkeiten testen: Also switch oder convert
-    private unsafe double GetTemperature(byte* startTmp, byte* endTmp)
+    private unsafe int GetTemperature(byte* startTmp, byte* endTmp)
     {
         int length = (int)(endTmp - startTmp + 1);
-        String tmp = System.Text.Encoding.UTF8.GetString(startTmp, length);
-        return Double.Parse(tmp, CultureInfo.InvariantCulture);
+        return ConvertByteToDigit(startTmp, length);
+    }
+
+    private unsafe int ConvertByteToDigit(byte* startTmp, int length)
+    {
+        int tmp = 0;
+        int pos = 1;
+        bool isNegative = false;
+        int start = 0;
+        if (*startTmp == 45)
+        {
+            start++;
+            isNegative = true;
+        }
+        for (int i = length - 1; i >= start; i--)
+        {
+            byte t = *(startTmp + i);
+            if (t == 46)
+            {
+                continue;
+            }
+
+            tmp += t switch
+            {
+                49 => pos * 1,
+                50 => pos * 2,
+                51 => pos * 3,
+                52 => pos * 4,
+                53 => pos * 5,
+                54 => pos * 6,
+                55 => pos * 7,
+                56 => pos * 8,
+                57 => pos * 9,
+                _ => 0
+            };
+            pos *= 10;
+        }
+        return isNegative ? tmp * -1 : tmp;
     }
 }

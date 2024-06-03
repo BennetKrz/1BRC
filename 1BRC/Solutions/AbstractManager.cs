@@ -5,7 +5,7 @@ namespace _1BRC.Solutions;
 
 public abstract class AbstractManager
 {
-    public static readonly string filePath = @"C:\measurements.txt";
+    public static string filePath = @"H:\Java\1brc-main\measurements.txt";
     protected readonly int threadCount;
 
     public AbstractManager(int threadCount)
@@ -39,7 +39,9 @@ public abstract class AbstractManager
             double min = allResultsFromThread.Min(r => r.Min);
             double max = allResultsFromThread.Max(r => r.Max);
             double avg = allResultsFromThread.Sum(r => r.Sum) / allResultsFromThread.Count;
+            min = double.Round(min, 1);
             avg = double.Round(avg, 1);
+            max = double.Round(max, 1);
 
             sb.Append($"{city}={min}/{avg}/{max}\n");
         }
