@@ -1,16 +1,12 @@
 ﻿namespace _1BRC.Solutions.ThreadedSimple;
 
-public class ThreadedManager : AbstractManager
+public class ThreadedManager(
+    int threadCount = 12,
+    string fileName = "~/1BRC/measurements.txt",
+    long linesInFile = 1_000_000_000)
+    : AbstractManager
 {
-
-    private readonly long linesInFile;
-    
-    public ThreadedManager(int threadCount = 6, long linesInFile = 1_000_000_000) : base(threadCount)
-    {
-        this.linesInFile = linesInFile;
-    }
-    
-    protected override List<Task<Dictionary<string, Result>>> StarThreads(List<(long start, long end)> offsets)
+    protected override List<Task<Dictionary<string, Result>>> StarThreads()
     {
         List<Task<Dictionary<string, Result>>> threads = new();
         
@@ -30,16 +26,11 @@ public class ThreadedManager : AbstractManager
             int ii = i;
             
             Task<Dictionary<string, Result>> t =
-                Task.Run(() => new ThreadedWorker(linesPerThread, ii, extra).AnalyseLines());
+                Task.Run(() => new ThreadedWorker(linesPerThread, ii, extra, fileName).AnalyseLines());
             threads.Add(t);
             
         }
 
         return threads;
-    }
-
-    protected override List<(long start, long end)> CalculateOffsets()
-    {
-        return null;
     }
 }

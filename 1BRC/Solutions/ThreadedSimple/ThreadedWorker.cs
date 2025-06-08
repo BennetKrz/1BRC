@@ -2,25 +2,14 @@
 
 namespace _1BRC.Solutions.ThreadedSimple;
 
-public class ThreadedWorker : IWorker
+public class ThreadedWorker(long numberOfLines, int threadNumber, long extra, string filePath) : IWorker
 {
-    private readonly long numberOfLines;
-    private readonly int threadNumber;
-    private readonly long extra;
-    
-    public ThreadedWorker(long numberOfLines, int threadNumber, long extra)
-    {
-        this.numberOfLines = numberOfLines;
-        this.threadNumber = threadNumber;
-        this.extra = extra;
-    }
-    
     public Dictionary<string, Result> AnalyseLines()
     {
         Console.WriteLine("Thread " + threadNumber + " started!");
         
         Dictionary<string, List<double>> measurements = new();
-        IEnumerable<string> lines = File.ReadLines(AbstractManager.filePath)
+        IEnumerable<string> lines = File.ReadLines(filePath)
                                         .Skip((int)(threadNumber * numberOfLines))
                                         .Take((int)(numberOfLines + extra));
         

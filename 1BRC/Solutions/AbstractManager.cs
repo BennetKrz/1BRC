@@ -1,23 +1,12 @@
 ﻿using System.Text;
-using _1BRC.Solutions.ThreadedSimple;
 
 namespace _1BRC.Solutions;
 
 public abstract class AbstractManager
 {
-    public static string filePath = @"H:\Java\1brc-main\measurements.txt";
-    protected readonly int threadCount;
-
-    public AbstractManager(int threadCount)
-    {
-        this.threadCount = threadCount;
-    }
-    
     public async Task Start()
     {
-        List<(long start, long end)> offsets = CalculateOffsets();
-
-        List<Task<Dictionary<string, Result>>> threads = StarThreads(offsets);
+        List<Task<Dictionary<string, Result>>> threads = StarThreads();
         await Task.WhenAll(threads);
 
         List<Dictionary<string, Result>> results = threads.Select(t => t.Result)
@@ -71,7 +60,5 @@ public abstract class AbstractManager
         return resultsPerCity;
     }
 
-    protected abstract List<Task<Dictionary<string, Result>>> StarThreads(List<(long start, long end)> offsets);
-
-    protected abstract List<(long start, long end)> CalculateOffsets();
+    protected abstract List<Task<Dictionary<string, Result>>> StarThreads();
 }

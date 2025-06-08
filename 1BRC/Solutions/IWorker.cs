@@ -1,6 +1,4 @@
-﻿using _1BRC.Solutions.ThreadedSimple;
-
-namespace _1BRC.Solutions;
+﻿namespace _1BRC.Solutions;
 
 public interface IWorker
 {

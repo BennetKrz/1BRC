@@ -4,20 +4,12 @@ using _1BRC.Solutions.ThreadedSimple;
 
 namespace _1BRC.Solutions.MMFSolution;
 
-public class MmfWorker : IWorker
+public class MmfWorker((long start, long end) delta, MemoryMappedViewAccessor memoryMappedViewAccessor)
+    : IWorker
 {
-    private MemoryMappedViewAccessor memoryMappedViewAccessor;
-    private (long start, long end) delta;
-    
-    public MmfWorker((long start, long end) delta, MemoryMappedViewAccessor memoryMappedViewAccessor)
-    {
-        this.delta = delta;
-        this.memoryMappedViewAccessor = memoryMappedViewAccessor;
-    }
-    
     public Dictionary<string, Result> AnalyseLines()
     {
-        Dictionary<string, List<int>> measurements = new();
+        Dictionary<string, List<int>> measurements = [];
         
         unsafe
         {
@@ -53,15 +45,11 @@ public class MmfWorker : IWorker
                     startCity = currentPtr + 2;
                         
                     int tmpValue = GetTemperature(startTmp, endTmp);
-                    if (measurements.ContainsKey(cityName))
-                    {
-                        measurements[cityName].Add(tmpValue);
-                    }
-                    else
+                    if (!measurements.ContainsKey(cityName))
                     {
                         measurements.Add(cityName, new List<int>(205_000));
-                        measurements[cityName].Add(tmpValue);
                     }
+                    measurements[cityName].Add(tmpValue);
                 }
             }
         }

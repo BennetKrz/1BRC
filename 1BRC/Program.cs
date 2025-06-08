@@ -4,18 +4,14 @@ using _1BRC.Solutions.MMFSolution;
 
 namespace _1BRC;
 
-public class Program
+public static class Program
 {
     public static async Task Main(string[] args)
     {
-        if (args.Length > 0 && File.Exists(args[0]))
-        {
-            AbstractManager.filePath = args[0];
-        }
         
         Stopwatch sw = Stopwatch.StartNew();
-        MmfManager mmfManager = new(12);
-        await mmfManager.Start();
+        AbstractManager manager = new MmfManager(12, "/home/bennet/1BRC/measurements.txt");
+        await manager.Start();
         
         //SimpleLinear s = new();
         //s.Start();
