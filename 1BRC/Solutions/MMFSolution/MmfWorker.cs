@@ -97,19 +97,7 @@ public class MmfWorker((long start, long end) delta, MemoryMappedViewAccessor me
                 continue;
             }
 
-            tmp += t switch
-            {
-                49 => pos * 1,
-                50 => pos * 2,
-                51 => pos * 3,
-                52 => pos * 4,
-                53 => pos * 5,
-                54 => pos * 6,
-                55 => pos * 7,
-                56 => pos * 8,
-                57 => pos * 9,
-                _ => 0
-            };
+            tmp += pos * (t - 48);
             pos *= 10;
         }
         return isNegative ? tmp * -1 : tmp;
